@@ -91,6 +91,10 @@ namespace BL
                 sourceAccount = await AccountMapper.UpdateBalance(sourceAccount, sourceAccount.Balance - amount);
                 destinationAccount = await AccountMapper.UpdateBalance(destinationAccount, destinationAccount.Balance + amount);
                 var outTran = await TransactionMapper.AddMTTransaction(destinationAccount, sourceAccount, amount);
+                if (outTran == null || outTran.TransactionId == 0)
+                {
+                    throw new BLException(KnownError.DALError_ReturnsIncorrectTransactionId);
+                }
                 TransactionHandler.EndWork();
                 return outTran.TransactionId;
             }
