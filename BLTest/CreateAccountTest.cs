@@ -1,7 +1,6 @@
 ﻿using BL;
 using BL.DALInterfaces;
 using DAL.Entities;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;
@@ -96,53 +95,7 @@ namespace BLTest
             moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
             moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
             Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
-        [Test]
-        public void ThrowsBLExceptionWhenDALReturnsIncorrectBalanceFromUpdateBalance()
-        {
-            string inputUser = "existingUser";
-            double inputbalance = 1000;
-            int generatedAccountId = 1;
-            double incorrectbalance = 2000;
-            Account resultFromAddAccount = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = 0
-            };
-            Account resultFromUpdate = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = incorrectbalance
-            };
-            moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
-            moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
-            Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
-        [Test]
-        public void ThrowsBLExceptionWhenDALReturnsIncorrectUsernameFromUpdateBalance()
-        {
-            string inputUser = "existingUser";
-            double inputbalance = 1000;
-            int generatedAccountId = 1;
-            string incorrectUser = "badUser";
-            Account resultFromAddAccount = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = 0
-            };
-            Account resultFromUpdate = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = incorrectUser,
-                Balance = inputbalance
-            };
-            moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
-            moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
-            Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
+        }        
         [Test]
         public void ThrowsBLExceptionWhenDALReturns0TransactionIdFromAddTransaction()
         {
@@ -197,102 +150,7 @@ namespace BLTest
             moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
             moqTransact.Setup(x => x.AddMTTransaction(resultFromUpdate, inputbalance)).Returns(Task.FromResult(resultFromAddTransact));
             Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
-        [Test]
-        public void ThrowsBLExceptionWhenDALReturnsIncorrectDestinationAccountFromAddTransaction()
-        {
-            string inputUser = "goodUser";
-            double inputbalance = 1000;
-            int generatedAccountId = 1;
-            int generatedTransactionId = 1;
-            int incorrectDestinationId = 2;
-            Account resultFromAddAccount = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = 0
-            };
-            Account resultFromUpdate = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = inputbalance
-            };
-            MTTransaction resultFromAddTransact = new MTTransaction
-            {
-                TransactionId = generatedTransactionId,
-                DestinationAccountId = new Account { AccountId = incorrectDestinationId, Balance = inputbalance, UserName = inputUser },
-                SourceAccountId = null,
-                TransferAmount = inputbalance
-            };
-            moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
-            moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
-            moqTransact.Setup(x => x.AddMTTransaction(resultFromUpdate, inputbalance)).Returns(Task.FromResult(resultFromAddTransact));
-            Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
-        [Test]
-        public void ThrowsBLExceptionWhenDALReturnsNonNullSourceAccountFromAddTransaction()
-        {
-            string inputUser = "goodUser";
-            double inputbalance = 1000;
-            int generatedAccountId = 1;
-            int generatedTransactionId = 1;
-            Account resultFromAddAccount = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = 0
-            };
-            Account resultFromUpdate = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = inputbalance
-            };
-            MTTransaction resultFromAddTransact = new MTTransaction
-            {
-                TransactionId = generatedTransactionId,
-                DestinationAccountId = new Account { AccountId = generatedAccountId, Balance = inputbalance, UserName = inputUser },
-                SourceAccountId = new Account { AccountId = generatedAccountId, Balance = inputbalance, UserName = inputUser },
-                TransferAmount = inputbalance
-            };
-            moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
-            moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
-            moqTransact.Setup(x => x.AddMTTransaction(resultFromUpdate, inputbalance)).Returns(Task.FromResult(resultFromAddTransact));
-            Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
-        [Test]
-        public void ThrowsBLExceptionWhenDALReturnsIncorrectAmountFromAddTransaction()
-        {
-            string inputUser = "goodUser";
-            double inputbalance = 1000;
-            int generatedAccountId = 1;
-            int generatedTransactionId = 1;
-            double incorrectbalance = 2000;
-            Account resultFromAddAccount = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = 0
-            };
-            Account resultFromUpdate = new Account
-            {
-                AccountId = generatedAccountId,
-                UserName = inputUser,
-                Balance = inputbalance
-            };
-            MTTransaction resultFromAddTransact = new MTTransaction
-            {
-                TransactionId = generatedTransactionId,
-                DestinationAccountId = new Account { AccountId = generatedAccountId, Balance = inputbalance, UserName = inputUser },
-                SourceAccountId = null,
-                TransferAmount = incorrectbalance
-            };
-            moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
-            moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));
-            moqTransact.Setup(x => x.AddMTTransaction(resultFromUpdate, inputbalance)).Returns(Task.FromResult(resultFromAddTransact));
-            Assert.ThrowsAsync<BLException>(async () => await mgr.CreateNewUser(inputUser, inputbalance));
-        }
+        }       
         [Test]
         //Unique Constraint Violation for User Exists Scenario
         public void ThrowsBLExceptionWhenDALThrowsUniqueRecordExceptionForUsernameField()
@@ -344,8 +202,7 @@ namespace BLTest
             string inputUser = "goodUser";
             double inputbalance = 1000;
             int generatedAccountId = 1;
-            int generatedTransactionId = 1;
-            double incorrectbalance = 2000;
+            int generatedTransactionId = 0;           
             Account resultFromAddAccount = new Account
             {
                 AccountId = generatedAccountId,
@@ -363,7 +220,7 @@ namespace BLTest
                 TransactionId = generatedTransactionId,
                 DestinationAccountId = new Account { AccountId = generatedAccountId, Balance = inputbalance, UserName = inputUser },
                 SourceAccountId = null,
-                TransferAmount = incorrectbalance
+                TransferAmount = inputbalance
             };
             moqAccount.Setup(x => x.AddAccount(inputUser)).Returns(Task.FromResult(resultFromAddAccount));
             moqAccount.Setup(x => x.UpdateBalance(resultFromAddAccount, inputbalance)).Returns(Task.FromResult(resultFromUpdate));

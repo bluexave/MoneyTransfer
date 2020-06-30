@@ -7,13 +7,11 @@ namespace BL
         InvalidInitialBalance,
         InvalidUsername,
         UsernameExists,
+        InvalidTransferAmount,
+        InvalidSource,
+        InvalidDestination,
         DALError_ReturnsIncorrectAccountId,
-        DALError_ReturnsIncorrectAccountBalance,
-        DALError_ReturnsIncorrectUsername,
-        DALError_ReturnsIncorrectTransactionId,
-        DALError_ReturnsIncorrectDestination,
-        DALError_ReturnsIncorrectSource,
-        DALError_ReturnsIncorrectTransactionAmount
+        DALError_ReturnsIncorrectTransactionId       
     }
     public class BLException : Exception
     {
@@ -31,27 +29,21 @@ namespace BL
                 case KnownError.UsernameExists:
                     blmessage = "Failed to Create Account. Username exists.";
                     break;
+                case KnownError.InvalidTransferAmount:
+                    blmessage = "Transfer Failed. Invalid Amount.";
+                    break;
+                case KnownError.InvalidSource:
+                    blmessage = "Transfer Failed. Invalid Source Account.";
+                    break;
+                case KnownError.InvalidDestination:
+                    blmessage = "Transfer Failed. Invalid Destination Account.";
+                    break;
                 case KnownError.DALError_ReturnsIncorrectAccountId:
                     blmessage = "DB error. Unexpected result for AccountId. Please contact your System Admin.";
                     break;
-                case KnownError.DALError_ReturnsIncorrectAccountBalance:
-                    blmessage = "DB error. Unexpected result for Account Balance. Please contact your System Admin.";
-                    break;
-                case KnownError.DALError_ReturnsIncorrectUsername:
-                    blmessage = "DB error. Unexpected result for Account Username. Please contact your System Admin.";
-                    break;
                 case KnownError.DALError_ReturnsIncorrectTransactionId:
                     blmessage = "DB error. Unexpected result for TransactionId. Please contact your System Admin.";
-                    break;
-                case KnownError.DALError_ReturnsIncorrectDestination:
-                    blmessage = "DB error. Unexpected result for DestinationId. Please contact your System Admin.";
-                    break;
-                case KnownError.DALError_ReturnsIncorrectSource:
-                    blmessage = "DB error. Unexpected result for SourceId. Please contact your System Admin.";
-                    break;
-                case KnownError.DALError_ReturnsIncorrectTransactionAmount:
-                    blmessage = "DB error. Unexpected result for TransactionAmount. Please contact your System Admin.";
-                    break;
+                    break;                
             }
         }
         public override string Message

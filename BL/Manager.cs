@@ -41,32 +41,12 @@ namespace BL
                 if (resAccount == null || resAccount.AccountId != genaccountId)
                 {
                     throw new BLException(KnownError.DALError_ReturnsIncorrectAccountId);
-                }
-                if (resAccount.Balance != initialBalance)
-                {
-                    throw new BLException(KnownError.DALError_ReturnsIncorrectAccountBalance);
-                }
-                if (resAccount.UserName != userName)
-                {
-                    throw new BLException(KnownError.DALError_ReturnsIncorrectUsername);
-                }
+                }                
                 var outTran = await TransactionMapper.AddMTTransaction(resAccount, initialBalance);
                 if (outTran == null || outTran.TransactionId == 0)
                 {
                     throw new BLException(KnownError.DALError_ReturnsIncorrectTransactionId);
-                }
-                if (outTran.DestinationAccountId.AccountId != genaccountId)
-                {
-                    throw new BLException(KnownError.DALError_ReturnsIncorrectDestination);
-                }
-                if (outTran.SourceAccountId != null)
-                {
-                    throw new BLException(KnownError.DALError_ReturnsIncorrectSource);
-                }
-                if (outTran.TransferAmount != initialBalance)
-                {
-                    throw new BLException(KnownError.DALError_ReturnsIncorrectTransactionAmount);
-                }
+                }                                
                 TransactionHandler.EndWork();
                 return resAccount.AccountId;
             }
@@ -79,6 +59,43 @@ namespace BL
                         ex = new BLException(KnownError.UsernameExists);
                     }
                 }
+                TransactionHandler.RollbackWork();
+                throw ex;
+            }
+        }
+        public async Task<int?> Transfer(int source, int destination, double amount)
+        {
+            TransactionHandler.StartWork(this.AccountMapper, this.TransactionMapper);
+            try
+            {
+                if (amount < 0)
+                {
+                    throw new BLException(KnownError.InvalidTransferAmount);
+                }
+                var sourceAccount = await AccountMapper.GetAccount(source);
+                var destinationAccount = await AccountMapper.GetAccount(destination);
+                if (sourceAccount == null || sourceAccount.AccountId == 0)
+                {
+                    throw new BLException(KnownError.InvalidSource);
+                }
+                if (destinationAccount == null || destinationAccount.AccountId == 0)
+                {
+                    throw new BLException(KnownError.InvalidDestination);
+                }
+                if (sourceAccount.Balance < amount)
+                {
+                    throw new BLException(KnownError.InvalidTransferAmount);
+                }
+                //_context.Entry(sourceAccount).State = EntityState.Detached;
+                //_context.Entry(destinationAccount).State = EntityState.Detached;
+                sourceAccount = await AccountMapper.UpdateBalance(sourceAccount, sourceAccount.Balance - amount);
+                destinationAccount = await AccountMapper.UpdateBalance(destinationAccount, destinationAccount.Balance + amount);
+                var outTran = await TransactionMapper.AddMTTransaction(destinationAccount, sourceAccount, amount);
+                TransactionHandler.EndWork();
+                return outTran.TransactionId;
+            }
+            catch (Exception ex)
+            {
                 TransactionHandler.RollbackWork();
                 throw ex;
             }
