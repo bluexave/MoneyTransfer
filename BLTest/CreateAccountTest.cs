@@ -1,6 +1,7 @@
 ﻿using BL;
 using BL.DALInterfaces;
 using DAL.Entities;
+using DAL.Interfaces;
 using Moq;
 using NUnit.Framework;
 using NUnit.Framework.Internal;

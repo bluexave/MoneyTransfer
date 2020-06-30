@@ -1,4 +1,6 @@
-﻿namespace BL.DALInterfaces
+﻿using DAL.Interfaces;
+
+namespace BL.DALInterfaces
 {
     public interface ITransactionHandler
     {

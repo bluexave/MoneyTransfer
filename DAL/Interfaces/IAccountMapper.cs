@@ -2,7 +2,7 @@
 using DAL.Entities;
 using System.Threading.Tasks;
 
-namespace BL.DALInterfaces
+namespace DAL.Interfaces
 {
     public interface IAccountMapper
     {
