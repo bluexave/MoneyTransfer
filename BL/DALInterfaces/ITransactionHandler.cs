@@ -7,5 +7,6 @@ namespace BL.DALInterfaces
         public void StartWork(IAccountMapper accountMapper, ITransactMapper transactMapper);
         public void EndWork();
         public void RollbackWork();
+        public void Detach(object o);
     }
 }

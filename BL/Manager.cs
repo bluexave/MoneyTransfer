@@ -87,8 +87,8 @@ namespace BL
                 {
                     throw new BLException(KnownError.InvalidTransferAmount);
                 }
-                //_context.Entry(sourceAccount).State = EntityState.Detached;
-                //_context.Entry(destinationAccount).State = EntityState.Detached;
+                TransactionHandler.Detach(sourceAccount);
+                TransactionHandler.Detach(destinationAccount);
                 sourceAccount = await AccountMapper.UpdateBalance(sourceAccount, sourceAccount.Balance - amount);
                 destinationAccount = await AccountMapper.UpdateBalance(destinationAccount, destinationAccount.Balance + amount);
                 var outTran = await TransactionMapper.AddMTTransaction(destinationAccount, sourceAccount, amount);
